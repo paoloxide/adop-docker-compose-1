@@ -84,6 +84,26 @@
         ]
       }
     },
+    "SSH": {
+      "Description": "Use this command to ssh into your ADOP EC2 instance.",
+      "Value": {
+        "Fn::Join": [
+          "",
+          [
+            "ssh -i ",
+            { "Ref": "KeyName" },
+            " ec2-user@",
+            {
+              "Fn::GetAtt": [
+                "AdopEC2",
+                "PublicIp"
+              ]
+            },
+            ""
+          ]
+        ]
+      }
+    },
     "PlatformCredentials": {
       "Description": "View this file inside the EC2 instance backend to see the platform auto generated passwords.",
       "Value": "/adop/adop-docker-compose/platform.secrets.sh"
@@ -102,6 +122,13 @@
       "MinLength": "8",
       "MaxLength": "15",
       "ConstraintDescription": "You are not allowed to include your 'username' or 'password' in your password! Minimum Length of 8 characters and must contain a number."
+    },
+    "UseElasticIP": {
+      "Type": "String",
+      "Description": "Without Elastic IP, your EC2 instance public IP address will change everytime the system is restarted.",
+      "AllowedValues": [ "true", "false" ],
+      "ConstraintDescription": "Must be a boolean value.",
+      "Default": "true"
     },
     "KeyName": {
       "Default": "academy_key",
@@ -129,9 +156,15 @@
       "Default": "m4.xlarge"
     }
   },
+  "Conditions": {
+    "UseElasticIPCondition" : {
+      "Fn::Equals" : [ {"Ref" : "UseElasticIP"}, "true" ]
+    }
+  },
   "Resources": {
     "ElasticIP": {
       "Type": "AWS::EC2::EIP",
+      "Condition": "UseElasticIPCondition",
       "Properties": {
         "InstanceId": {
           "Ref": "AdopEC2"
@@ -221,7 +254,7 @@
                 "cd /adop/adop-docker-compose\n",
                 "sleep 10\n",
                 "export PUBLIC_IP=$(curl http://instance-data/latest/meta-data/public-ipv4)\n",
-                "echo \"\n",
+                "export PUBLIC_HOSTNAME=$(curl http://instance-data/latest/meta-data/public-hostname)\n",
                 "export ADOP_HOME=\"/adop/adop-docker-compose\"\n",
                 "export PUBLIC_IP=$PUBLIC_IP\n",
                 "export TARGET_HOST=10.10.1.101\n",
