@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# SMTP
+
+export ADOP_SMTP_ENABLED="true"
+
 # LDAP
 
 export LDAP_DOMAIN="ldap.adop.com"
