@@ -1,13 +1,9 @@
 #!/bin/bash
 
-# Globals
-
-export LDAP_PWD="Jpk66g63ZifGYIcShSGM"
-
 # LDAP
 
-export LDAP_DOMAIN="ldap.example.com"
-export LDAP_FULL_DOMAIN="dc=ldap,dc=example,dc=com"
+export LDAP_DOMAIN="ldap.adop.com"
+export LDAP_FULL_DOMAIN="dc=ldap,dc=adop,dc=com"
 
 # Gerrit MySQL
 
