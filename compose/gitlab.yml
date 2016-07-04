@@ -24,9 +24,8 @@ gitlab:
       gitlab_rails['smtp_password'] = '${INITIAL_ADMIN_PASSWORD_PLAIN}'
       gitlab_rails['smtp_domain'] = '${PUBLIC_HOSTNAME}'
       gitlab_rails['smtp_authentication'] = 'login'
-      gitlab_rails['smtp_enable_starttls_auto'] = false
-      gitlab_rails['smtp_tls'] = false
-      gitlab_rails['smtp_openssl_verify_mode'] = 'none'
+      gitlab_rails['smtp_enable_starttls_auto'] = true
+      gitlab_rails['smtp_openssl_verify_mode'] = 'peer'
       gitlab_rails['ldap_enabled'] = true
       gitlab_rails['ldap_servers'] = YAML.load <<-'EOS'
         main:
