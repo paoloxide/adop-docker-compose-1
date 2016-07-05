@@ -195,7 +195,9 @@
         ],
         "NetworkInterfaces": [
           {
-            "AssociatePublicIpAddress": "true",
+            "AssociatePublicIpAddress": {
+						  "Fn::If" : [ "UseElasticIPCondition", "false", "true" ]
+						},
             "DeleteOnTermination": "true",
             "DeviceIndex": "0",
             "GroupSet": [
@@ -247,7 +249,7 @@
               [
                 "#!/bin/bash\n",
                 "export IP=$(hostname --ip-address)\n",
-                "yum -y install docker\n",
+                "until [[ $(rpm -qa docker | wc -l) -gt 0 ]]; do yum -y install docker; echo \"Waiting until docker is installed..\"; sleep 5; done\n",
                 "service docker start\n",
                 "chkconfig docker on\n",
                 "curl -L https://github.com/docker/compose/releases/download/1.7.1/docker-compose-`uname -s`-`uname -m` > /usr/local/bin/docker-compose\n",
