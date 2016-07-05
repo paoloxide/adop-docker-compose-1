@@ -263,7 +263,7 @@
                 "sleep 10\n",
                 "export PUBLIC_IP=$(curl http://instance-data/latest/meta-data/public-ipv4)\n",
                 "echo \"\n",
-                "export PUBLIC_HOSTNAME=$(curl http://instance-data/latest/meta-data/public-hostname)\n",
+                "export SMTP_DOMAIN=amazonaws.com\n",
                 "export ADOP_HOME=\"/adop/adop-docker-compose\"\n",
                 "export PUBLIC_IP=$PUBLIC_IP\n",
                 "export TARGET_HOST=10.10.1.101\n",
