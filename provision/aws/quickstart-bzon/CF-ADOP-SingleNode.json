@@ -128,6 +128,11 @@
       "MaxLength": "15",
       "ConstraintDescription": "You are not allowed to include your 'username' or 'password' in your password! Minimum Length of 8 characters and must contain a number."
     },
+    "NotifyEmailAddress": {
+      "Default": "",
+      "Description": "OPTIONAL - List of email addresses separated by comma to be notified upon successful environment provisioning.",
+      "Type": "String"
+    },
     "UseElasticIP": {
       "Type": "String",
       "Description": "Without Elastic IP, your EC2 instance public IP address will change everytime the system is restarted.",
@@ -334,6 +339,11 @@
                   "Ref": "AdopUserPassword"
                 },
                 "\n",
+								"export NOTIFICATION_LIST=",
+								{
+								  "Ref": "NotifyEmailAddress"
+								},
+								"\n",
                 "export COMPOSE_OVERRIDES='-f etc/volumes/local/default.yml -f etc/logging/syslog/default.yml'\n",
                 "\"> cloudformation_vars.sh\n",
                 "source cloudformation_vars.sh\n",
