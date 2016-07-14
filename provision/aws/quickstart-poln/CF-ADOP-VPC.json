@@ -1,0 +1,130 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "CF Stack Creating VPC and Security Groups",
+  "Parameters": {
+    "VPCCidrBlock": {
+        "Type": "String",
+        "Description": "Defines the VPC CIDR Block to Use with Security Groups",
+        "Default": "10.10.0.0/16",
+        "AllowedValues": [
+            "10.10.0.0/16",
+            "10.10.0.0/24"
+        ],
+        "ConstraintDescription": "Must be a valid VPC CIDR Block"
+    }
+  },
+  "Resources": {
+    "PublicRouteDefault": {
+      "Properties": {
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "GatewayId": {
+          "Ref": "VpcInternetGateway"
+        },
+        "RouteTableId": {
+          "Ref": "PublicRouteTable"
+        }
+      },
+      "Type": "AWS::EC2::Route"
+    },
+    "PublicRouteTable": {
+      "Properties": {
+        "VpcId": {
+          "Ref": "Vpc"
+        }
+      },
+      "Type": "AWS::EC2::RouteTable"
+    },
+    "PublicSubnet": {
+      "Properties": {
+        "CidrBlock": "10.10.1.0/24",
+        "VpcId": {
+          "Ref": "Vpc"
+        }
+      },
+      "Type": "AWS::EC2::Subnet"
+    },
+    "PublicSubnetPublicRouteTableAssoc": {
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "PublicRouteTable"
+        },
+        "SubnetId": {
+          "Ref": "PublicSubnet"
+        }
+      },
+      "Type": "AWS::EC2::SubnetRouteTableAssociation"
+    },
+    "Vpc": {
+      "Properties": {
+        "CidrBlock": {
+            "Ref": "VPCCidrBlock"
+        },
+        "EnableDnsHostnames": "true",
+        "EnableDnsSupport": "true"
+      },
+      "Type": "AWS::EC2::VPC"
+    },
+    "VpcGatewayAttachment": {
+      "Properties": {
+        "InternetGatewayId": {
+          "Ref": "VpcInternetGateway"
+        },
+        "VpcId": {
+          "Ref": "Vpc"
+        }
+      },
+      "Type": "AWS::EC2::VPCGatewayAttachment"
+    },
+    "VpcInternetGateway": {
+      "Type": "AWS::EC2::InternetGateway"
+    },
+    "AdopSecurityGroup": {
+      "Properties": {
+        "GroupDescription": "Swarm Proxy Security Group",
+        "SecurityGroupIngress": [
+          {
+            "CidrIp": { "Fn::GetAtt": [ "Vpc", "CidrBlock"] },
+            "FromPort": "22",
+            "IpProtocol": "tcp",
+            "ToPort": "22"
+          },
+          {
+            "CidrIp": { "Fn::GetAtt": [ "Vpc", "CidrBlock"] },
+            "FromPort": "25",
+            "IpProtocol": "tcp",
+            "ToPort": "25"
+          },
+          {
+            "CidrIp": { "Fn::GetAtt": [ "Vpc", "CidrBlock"] },
+            "FromPort": "80",
+            "IpProtocol": "tcp",
+            "ToPort": "80"
+          },
+          {
+            "CidrIp": { "Fn::GetAtt": [ "Vpc", "CidrBlock"] },
+            "FromPort": "443",
+            "IpProtocol": "tcp",
+            "ToPort": "443"
+          }
+        ],
+        "VpcId": {
+          "Ref": "Vpc"
+        }
+      },
+      "Type": "AWS::EC2::SecurityGroup"
+    },
+    "AdopWaitCondition": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+        "Handle": {
+          "Ref": "AdopWaitConditionHandle"
+        },
+        "Timeout": "3500"
+      }
+    },
+    "AdopWaitConditionHandle": {
+      "Type": "AWS::CloudFormation::WaitConditionHandle",
+      "Properties": {}
+    }
+  }
+}
